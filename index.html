@@ -139,9 +139,9 @@
 
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { neon } from '@netlify/neon';
+const sql = neon(); // automatically uses env NETLIFY_DATABASE_URL
+const [post] = await sql`SELECT * FROM posts WHERE id = ${postId}`;
 
         document.addEventListener('DOMContentLoaded', () => {
             const addSantriForm = document.getElementById('add-santri-form');
