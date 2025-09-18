@@ -1,0 +1,15 @@
+{
+  "name": "aplikasi-uang-saku-backend",
+  "version": "1.0.0",
+  "description": "Backend for Santri Pocket Money App",
+  "main": "api.js",
+  "scripts": {
+    "start": "node netlify/functions/api.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "serverless-http": "^3.2.0"
+  }
+}

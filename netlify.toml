@@ -1,0 +1,17 @@
+Konfigurasi build untuk Netlify
+[build]
+
+Direktori di mana Netlify akan mencari backend functions
+functions = "netlify/functions"
+
+Aturan pengalihan (redirects and rewrites)
+[[redirects]]
+
+Arahkan semua request yang dimulai dengan /api/
+from = "/api/*"
+
+ke backend function 'api'
+to = "/.netlify/functions/api/:splat"
+
+Dengan status 200 (OK), yang berarti ini adalah rewrite, bukan redirect
+status = 200
