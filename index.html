@@ -51,9 +51,14 @@
             </form>
         </div>
 
-        <!-- Daftar Santri -->
+        <!-- Search Bar and Daftar Santri -->
         <div>
-            <h2 class="text-xl font-semibold mb-4">Daftar Santri</h2>
+             <div class="flex justify-between items-center mb-4">
+                 <h2 class="text-xl font-semibold">Daftar Santri</h2>
+                 <div class="w-full max-w-xs">
+                      <input type="text" id="search-santri" placeholder="Cari nama santri..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                 </div>
+            </div>
             <div id="santri-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Kartu Santri akan ditampilkan di sini -->
             </div>
@@ -125,6 +130,7 @@
             const santriListContainer = document.getElementById('santri-list');
             const emptyState = document.getElementById('empty-state');
             const totalSaldoDisplay = document.getElementById('total-saldo-display');
+            const searchInput = document.getElementById('search-santri');
 
             // Modal elements
             const transactionModal = document.getElementById('transaction-modal');
@@ -182,13 +188,20 @@
             };
 
             // Fungsi untuk menampilkan daftar santri
-            const renderSantriList = () => {
+            const renderSantriList = (listToRender = santriData) => {
                 santriListContainer.innerHTML = '';
-                if (santriData.length === 0) {
+                const emptyStateText = document.querySelector('#empty-state p');
+
+                if (listToRender.length === 0) {
+                    if (searchInput.value) {
+                         emptyStateText.textContent = `Santri dengan nama "${searchInput.value}" tidak ditemukan.`;
+                    } else {
+                         emptyStateText.textContent = 'Belum ada data santri. Silakan tambahkan santri baru.';
+                    }
                     emptyState.classList.remove('hidden');
                 } else {
                     emptyState.classList.add('hidden');
-                    santriData.forEach(santri => {
+                    listToRender.forEach(santri => {
                         const card = document.createElement('div');
                         card.className = 'bg-white p-5 rounded-xl shadow-md flex flex-col justify-between';
                         card.innerHTML = `
@@ -227,6 +240,15 @@
                     modalElement.classList.add('hidden');
                 }, 300);
             };
+            
+            // Fungsi untuk handle search
+            const handleSearch = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filteredSantri = santriData.filter(santri => 
+                    santri.nama.toLowerCase().includes(searchTerm)
+                );
+                renderSantriList(filteredSantri);
+            };
 
             // Event listener untuk menambah santri baru
             addSantriForm.addEventListener('submit', (e) => {
@@ -248,6 +270,7 @@
                 
                 santriData.push(newSantri);
                 saveData();
+                searchInput.value = '';
                 renderSantriList();
                 renderTotalSaldo();
                 addSantriForm.reset();
@@ -316,7 +339,7 @@
                 });
                 
                 saveData();
-                renderSantriList();
+                handleSearch(); // Re-render list according to current search
                 renderTotalSaldo();
                 closeModal(transactionModal);
             });
@@ -370,7 +393,7 @@
                 if (santriToDeleteId) {
                     santriData = santriData.filter(s => s.id !== santriToDeleteId);
                     saveData();
-                    renderSantriList();
+                    handleSearch(); // Re-render list according to current search
                     renderTotalSaldo();
                     closeModal(deleteConfirmModal);
                     santriToDeleteId = null;
@@ -476,12 +499,11 @@
                     analyzeHistoryBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             };
-
-            // Event listener untuk tombol export dan analisis
+            
+            // Event Listeners
+            searchInput.addEventListener('input', handleSearch);
             exportHistoryBtn.addEventListener('click', (e) => e.target.dataset.id && exportHistoryToExcel(e.target.dataset.id));
             analyzeHistoryBtn.addEventListener('click', (e) => e.target.dataset.id && analyzeHistory(e.target.dataset.id));
-
-            // Event listener untuk tombol batal dan tutup modal
             cancelButton.addEventListener('click', () => closeModal(transactionModal));
             closeHistoryButton.addEventListener('click', () => closeModal(historyModal));
             cancelDeleteButton.addEventListener('click', () => closeModal(deleteConfirmModal));
